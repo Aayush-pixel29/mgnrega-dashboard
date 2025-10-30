@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MGNREGA - Our Voice, Our Rights</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide-static@latest/dist/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Simple loader style */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #f97316;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-orange-50 to-green-50">
+
+    <header class="bg-gradient-to-r from-orange-600 to-green-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6 max-w-7xl">
+            <div class="flex items-center gap-3">
+                <i data-lucide="briefcase" class="w-10 h-10"></i>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold">मनरेगा - हमारी आवाज़, हमारे अधिकार</h1>
+                    <p class="text-sm md:text-base text-orange-100">MGNREGA - Our Voice, Our Rights</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-6 max-w-7xl">
+        <div id="explainer-box" class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded-lg shadow">
+            <div class="flex items-start justify-between">
+                <div class="flex gap-3">
+                    <i data-lucide="info" class="w-6 h-6 text-blue-600 flex-shrink-0 mt-1"></i>
+                    <div>
+                        <h3 class="font-bold text-blue-900 mb-2">मनरेगा क्या है? / What is MGNREGA?</h3>
+                        <p class="text-sm text-blue-800 mb-2">
+                            मनरेगा एक सरकारी योजना है जो ग्रामीण क्षेत्रों में 100 दिन का गारंटीकृत रोजगार देती है।
+                            यह डैशबोर्ड आपके जिले में इस योजना का प्रदर्शन दिखाता है।
+                        </p>
+                        <p class="text-xs text-blue-700">
+                            MGNREGA provides 100 days of guaranteed wage employment.
+                            This dashboard shows how your district is performing.
+                        </p>
+                    </div>
+                </div>
+                <button onclick="document.getElementById('explainer-box').style.display = 'none'"
+                    class="text-blue-600 hover:text-blue-800 font-bold">✕</button>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div class="flex items-center gap-2 mb-4">
+                <i data-lucide="map-pin" class="w-6 h-6 text-orange-600"></i>
+                <h2 class="text-xl font-bold text-gray-800">अपना जिला चुनें / Select Your District</h2>
+            </div>
+            <p id="location-status" class="text-sm text-gray-500 mb-3 flex items-center gap-2">
+                <i data-lucide="compass" class="w-4 h-4"></i>
+                आपकी लोकेशन खोजी जा रही है... / Detecting your location...
+            </p>
+            <div class="relative">
+                <select id="district-select"
+                    class="w-full md:w-96 px-4 py-3 text-lg border-2 border-gray-300 rounded-lg focus:border-orange-500 focus:outline-none appearance-none bg-white cursor-pointer">
+                    <option value="">जिला चुनें / Choose District</option>
+                </select>
+                <i data-lucide="chevron-down" class="absolute right-3 top-4 w-6 h-6 text-gray-400 pointer-events-none"></i>
+            </div>
+        </div>
+
+        <div id="loader" class="text-center py-12 hidden">
+            <div class="loader inline-block"></div>
+            <p class="mt-4 text-gray-600">डेटा लोड हो रहा है... / Loading data...</p>
+        </div>
+
+        <div id="dashboard-content" class="hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-blue-500">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i data-lucide="users" class="w-5 h-5 text-gray-600"></i>
+                        <h3 class="text-sm font-medium text-gray-600">कुल कार्डधारक / Total Job Cards</h3>
+                    </div>
+                    <p id="metric-job-cards" class="text-2xl font-bold text-gray-900">0</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-green-500">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i data-lucide="trending-up" class="w-5 h-5 text-gray-600"></i>
+                        <h3 class="text-sm font-medium text-gray-600">सक्रिय कामगार / Active Workers</h3>
+                    </div>
+                    <p id="metric-active-workers" class="text-2xl font-bold text-gray-900">0</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-purple-500">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i data-lucide="briefcase" class="w-5 h-5 text-gray-600"></i>
+                        <h3 class="text-sm font-medium text-gray-600">पूर्ण कार्य / Completed Works</h3>
+                    </div>
+                    <p id="metric-completed-works" class="text-2xl font-bold text-gray-900">0</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-orange-500">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i data-lucide="indian-rupee" class="w-5 h-5 text-gray-600"></i>
+                        <h3 class="text-sm font-medium text-gray-600">कुल खर्च / Total Expenditure</h3>
+                    </div>
+                    <p id="metric-expenditure" class="text-2xl font-bold text-gray-900">₹0 Cr</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="flex items-center gap-2 mb-4">
+                    <i data-lucide="award" class="w-6 h-6 text-orange-600"></i>
+                    <h2 class="text-xl font-bold text-gray-800">प्रदर्शन सूचक / Performance Indicator</h2>
+                </div>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-medium">काम की मांग / Work Demanded</span>
+                            <span id="metric-demand" class="text-lg font-bold text-blue-600">0</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3">
+                            <div class="bg-blue-500 h-3 rounded-full" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-medium">काम दिया गया / Work Provided</span>
+                            <span id="metric-provided" class="text-lg font-bold text-green-600">0</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3">
+                            <div id="progress-bar" class="bg-green-500 h-3 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="performance-alert" class="mt-4 p-4 rounded-lg bg-green-50 border border-green-200">
+                    <p id="performance-text" class="text-sm font-medium">✓ उत्कृष्ट प्रदर्शन / Excellent Performance</p>
+                    <p id="performance-subtext" class="text-xs mt-1 text-gray-600">0% of work demand fulfilled</p>
+                </div>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-6 mb-6">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <i data-lucide="calendar" class="w-5 h-5"></i>
+                        मासिक कार्य-बल / Monthly Workforce
+                    </h3>
+                    <canvas id="workforce-chart" height="250"></canvas>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <i data-lucide="indian-rupee" class="w-5 h-5"></i>
+                        मासिक व्यय / Monthly Expenditure (Cr)
+                    </h3>
+                    <canvas id="expenditure-chart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-6 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-sm">डेटा स्रोत: data.gov.in | अंतिम अपडेट: October 2025</p>
+            <p class="text-xs text-gray-400 mt-2">Data Source: Government of India Open API | Last Updated: October 2025</p>
+        </div>
+    </footer>
+
+    <script>
+        // Chart.js instances
+        let workforceChart, expenditureChart;
+
+        // Helper: Format numbers to Indian style (1,00,000)
+        const formatIN = (num) => new Intl.NumberFormat('en-IN').format(num);
+
+        // 1. Fetch District Data
+        async function fetchDistrictData(districtCode) {
+            if (!districtCode) {
+                document.getElementById('dashboard-content').classList.add('hidden');
+                return;
+            }
+            
+            document.getElementById('loader').classList.remove('hidden');
+            document.getElementById('dashboard-content').classList.add('hidden');
+            
+            try {
+                // Fetch performance and trends data in parallel
+                const [perfResponse, trendsResponse] = await Promise.all([
+                    fetch(`/api/performance/${districtCode}`),
+                    fetch(`/api/trends/${districtCode}`)
+                ]);
+
+                if (!perfResponse.ok || !trendsResponse.ok) {
+                    throw new Error('Failed to fetch data');
+                }
+
+                const performance = await perfResponse.json();
+                const trends = await trendsResponse.json();
+                
+                // Render all data
+                renderMetrics(performance);
+                renderCharts(trends);
+
+                document.getElementById('loader').classList.add('hidden');
+                document.getElementById('dashboard-content').classList.remove('hidden');
+
+            } catch (error) {
+                console.error(error);
+                document.getElementById('loader').classList.add('hidden');
+                alert('Error loading data. Please try again.');
+            }
+        }
+
+        // 2. Render Key Metrics
+        function renderMetrics(data) {
+            document.getElementById('metric-job-cards').innerText = formatIN(data.totaljobcards || data.data?.totalJobCards || 0);
+            document.getElementById('metric-active-workers').innerText = formatIN(data.activeworkers || data.data?.activeWorkers || 0);
+            document.getElementById('metric-completed-works').innerText = formatIN(data.completedworks || data.data?.completedWorks || 0);
+            document.getElementById('metric-expenditure').innerText = `₹${data.totalexpenditure || data.data?.totalExpenditure || 0} Cr`;
+            
+            const demand = data.workdemand || data.data?.workDemand || 0;
+            const provided = data.workprovided || data.data?.workProvided || 0;
+            const rate = (demand > 0) ? ((provided / demand) * 100).toFixed(1) : 0;
+            
+            document.getElementById('metric-demand').innerText = formatIN(demand);
+            document.getElementById('metric-provided').innerText = formatIN(provided);
+            document.getElementById('progress-bar').style.width = `${rate}%`;
+
+            // Update performance alert
+            const alertBox = document.getElementById('performance-alert');
+            const perfText = document.getElementById('performance-text');
+            const perfSubtext = document.getElementById('performance-subtext');
+
+            alertBox.className = 'mt-4 p-4 rounded-lg'; // Reset classes
+            if (rate >= 90) {
+                alertBox.classList.add('bg-green-50', 'border', 'border-green-200');
+                perfText.innerText = '✓ उत्कृष्ट प्रदर्शन / Excellent Performance';
+            } else if (rate >= 70) {
+                alertBox.classList.add('bg-yellow-50', 'border', 'border-yellow-200');
+                perfText.innerText = '⚠ सुधार की आवश्यकता / Needs Improvement';
+            } else {
+                alertBox.classList.add('bg-red-50', 'border', 'border-red-200');
+                perfText.innerText = '✗ तत्काल ध्यान चाहिए / Requires Attention';
+            }
+            perfSubtext.innerText = `आपके जिले में ${rate}% काम की मांग पूरी हुई / ${rate}% of work demand fulfilled`;
+        }
+        
+        // 3. Render Charts
+        function renderCharts(trends) {
+            const labels = trends.map(d => d.month);
+            const workersData = trends.map(d => d.workers);
+            const expenditureData = trends.map(d => d.expenditure);
+
+            // Workforce Chart (Line)
+            const workforceCtx = document.getElementById('workforce-chart').getContext('2d');
+            if (workforceChart) workforceChart.destroy();
+            workforceChart = new Chart(workforceCtx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Workers',
+                        data: workersData,
+                        borderColor: '#f97316',
+                        tension: 0.1,
+                        fill: false
+                    }]
+                },
+                options: { responsive: true }
+            });
+
+            // Expenditure Chart (Bar)
+            const expenditureCtx = document.getElementById('expenditure-chart').getContext('2d');
+            if (expenditureChart) expenditureChart.destroy();
+            expenditureChart = new Chart(expenditureCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Expenditure (Cr)',
+                        data: expenditureData,
+                        backgroundColor: '#22c55e'
+                    }]
+                },
+                options: { responsive: true }
+            });
+        }
+
+        // 4. Get User Location (Bonus)
+        async function getUserLocation() {
+            if ('geolocation' in navigator) {
+                navigator.geolocation.getCurrentPosition(async (position) => {
+                    const { latitude, longitude } = position.coords;
+                    try {
+                        const response = await fetch('/api/location-to-district', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ lat: latitude, lng: longitude })
+                        });
+                        const data = await response.json();
+                        if (data.district) {
+                            document.getElementById('district-select').value = data.district.code;
+                            document.getElementById('location-status').innerHTML = `
+                                <i data-lucide="map-pin" class="w-4 h-4 text-green-600"></i>
+                                आपकी लोकेशन के आधार पर चुना गया: <b>${data.district.name}</b>
+                            `;
+                            // Fetch data for detected district
+                            fetchDistrictData(data.district.code);
+                        }
+                    } catch (error) {
+                        document.getElementById('location-status').innerText = 'लोकेशन नहीं मिली / Location detection failed. Please select manually.';
+                    }
+                }, (error) => {
+                    document.getElementById('location-status').innerText = 'कृपया अपना जिला चुनें / Please select your district manually.';
+                });
+            } else {
+                document.getElementById('location-status').innerText = 'लोकेशन समर्थित नहीं है / Geolocation not supported.';
+            }
+        }
+
+        // 5. Initialize App
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Load Lucide icons
+            lucide.createIcons();
+
+            // Populate districts dropdown
+            try {
+                const response = await fetch('/api/districts');
+                const districts = await response.json();
+                const select = document.getElementById('district-select');
+                districts.forEach(district => {
+                    const option = document.createElement('option');
+                    option.value = district.code;
+                    option.text = district.name;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Failed to load districts');
+            }
+
+            // Add event listener for selection
+            document.getElementById('district-select').addEventListener('change', (e) => {
+                fetchDistrictData(e.target.value);
+            });
+
+            // Try to get user location
+            getUserLocation();
+        });
+    </script>
+</body>
+</html>
