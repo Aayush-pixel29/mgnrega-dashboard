@@ -217,15 +217,15 @@
         }
 
         // 2. Render Key Metrics
-        function renderMetrics(data) {
-            document.getElementById('metric-job-cards').innerText = formatIN(data.totaljobcards || data.data?.totalJobCards || 0);
-            document.getElementById('metric-active-workers').innerText = formatIN(data.activeworkers || data.data?.activeWorkers || 0);
-            document.getElementById('metric-completed-works').innerText = formatIN(data.completedworks || data.data?.completedWorks || 0);
-            document.getElementById('metric-expenditure').innerText = `₹${data.totalexpenditure || data.data?.totalExpenditure || 0} Cr`;
-            
-            const demand = data.workdemand || data.data?.workDemand || 0;
-            const provided = data.workprovided || data.data?.workProvided || 0;
-            const rate = (demand > 0) ? ((provided / demand) * 100).toFixed(1) : 0;
+function renderMetrics(data) {
+    document.getElementById('metric-job-cards').innerText = formatIN(data.totalJobCards || 0);
+    document.getElementById('metric-active-workers').innerText = formatIN(data.activeWorkers || 0);
+    document.getElementById('metric-completed-works').innerText = formatIN(data.completedWorks || 0);
+    document.getElementById('metric-expenditure').innerText = `₹${data.totalExpenditure || 0} Cr`;
+
+    const demand = data.workDemand || 0;
+    const provided = data.workProvided || 0;
+    const rate = (demand > 0) ? ((provided / demand) * 100).toFixed(1) : 0;
             
             document.getElementById('metric-demand').innerText = formatIN(demand);
             document.getElementById('metric-provided').innerText = formatIN(provided);
